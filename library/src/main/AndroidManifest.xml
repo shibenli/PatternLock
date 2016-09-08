@@ -5,4 +5,8 @@
   ~ All Rights Reserved.
   -->
 
-<manifest package="me.zhanghai.android.patternlock" />
+<manifest package="me.zhanghai.android.patternlock"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+</manifest>

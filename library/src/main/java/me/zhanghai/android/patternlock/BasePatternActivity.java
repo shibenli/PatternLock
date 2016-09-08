@@ -8,6 +8,7 @@ package me.zhanghai.android.patternlock;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ public class BasePatternActivity extends AppCompatActivity {
     protected LinearLayout mButtonContainer;
     protected Button mLeftButton;
     protected Button mRightButton;
+    protected ImageView mFingerprintImageView;
+    protected TextView mFingerprintTextView;
 
     private final Runnable clearPatternRunnable = new Runnable() {
         public void run() {
@@ -38,6 +41,8 @@ public class BasePatternActivity extends AppCompatActivity {
         mButtonContainer = (LinearLayout)findViewById(R.id.pl_button_container);
         mLeftButton = (Button)findViewById(R.id.pl_left_button);
         mRightButton = (Button)findViewById(R.id.pl_right_button);
+        mFingerprintImageView = (ImageView) this.findViewById(R.id.pin_code_fingerprint_imageview);
+        mFingerprintTextView = (TextView) this.findViewById(R.id.pin_code_fingerprint_textview);
     }
 
     protected void removeClearPatternRunnable() {

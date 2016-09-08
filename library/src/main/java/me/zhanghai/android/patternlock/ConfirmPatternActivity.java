@@ -5,9 +5,16 @@
 
 package me.zhanghai.android.patternlock;
 
+import android.content.Context;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.benli.fingerprint.FingerprintUiHelper;
 import java.util.List;
 
 // For AOSP implementations, see:
@@ -15,13 +22,16 @@ import java.util.List;
 // https://android.googlesource.com/platform/frameworks/base/+/43d8451/policy/src/com/android/internal/policy/impl/keyguard/KeyguardPatternView.java
 // https://android.googlesource.com/platform/frameworks/base/+/master/packages/Keyguard/src/com/android/keyguard/KeyguardPatternView.java
 public class ConfirmPatternActivity extends BasePatternActivity
-        implements PatternView.OnPatternListener {
+        implements PatternView.OnPatternListener, FingerprintUiHelper.Callback {
 
     private static final String KEY_NUM_FAILED_ATTEMPTS = "num_failed_attempts";
 
     public static final int RESULT_FORGOT_PASSWORD = RESULT_FIRST_USER;
 
     protected int mNumFailedAttempts;
+
+    protected FingerprintUiHelper mFingerprintUiHelper;
+    private String TAG = ConfirmPatternActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +63,29 @@ public class ConfirmPatternActivity extends BasePatternActivity
         }
     }
 
+    private void initLayoutForFingerprint() {
+        mFingerprintUiHelper = new FingerprintUiHelper.FingerprintUiHelperBuilder(this).build(mFingerprintImageView, mFingerprintTextView, this);
+        mFingerprintUiHelper.startfingerprint();
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_NUM_FAILED_ATTEMPTS, mNumFailedAttempts);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        //Init layout for Fingerprint
+        initLayoutForFingerprint();
+    }
+
+    @Override protected void onPause() {
+        if (mFingerprintUiHelper != null) {
+            mFingerprintUiHelper.stopListening();
+        }
+        super.onPause();
     }
 
     @Override
@@ -115,5 +143,14 @@ public class ConfirmPatternActivity extends BasePatternActivity
     protected void onForgotPassword() {
         setResult(RESULT_FORGOT_PASSWORD);
         finish();
+    }
+
+    @Override public void onAuthenticated() {
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    @Override public void onError() {
+        Log.e(TAG, "Fingerprint READ ERROR!!!");
     }
 }
